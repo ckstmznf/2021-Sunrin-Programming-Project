@@ -1,6 +1,8 @@
 #pragma once
 #include <stdio.h>
 #include <conio.h>
+#include <string.h>
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include <WinSock2.h>
 #pragma comment( lib, "ws2_32.lib")
@@ -33,16 +35,16 @@ void main() {
 
 
 	while (1){
-		char cBuff;
-		memset( &cBuff, 0, sizeof( cBuff ) );
+		char msg[100];
+		memset(msg, 0, sizeof(msg));
 
-		int iRecv = recv( sockAccept, &cBuff, sizeof( cBuff ), 0 );
+		int iRecv = recv( sockAccept, msg, sizeof(msg), 0 );
 
 		if ( 0 < iRecv ) {
-			printf("%c", cBuff);
+			printf("»ó´ë : %s\n", msg);
 			
-			if ( 0x1b == cBuff ) {
-				printf("EXIT");
+			if (strcmp("END", msg) == 0) {
+				printf("EXIT!");
 				break;
 			}
 		}

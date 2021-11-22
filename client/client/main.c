@@ -1,7 +1,8 @@
 #pragma once
 #include <stdio.h>
 #include <conio.h>
-// #define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include <string.h>
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #pragma comment( lib, "ws2_32.lib")
 #include <WinSock2.h>
@@ -12,7 +13,7 @@ void main() {
 	WSADATA wsdata;
 	int iRes = WSAStartup( MAKEWORD( 0x02, 0x02 ), &wsdata );
 	if ( ERROR_SUCCESS != iRes ) return;
-
+	
 	SOCKET hSocket;
 	hSocket = socket( PF_INET, SOCK_STREAM, 0 );
 	if ( INVALID_SOCKET == hSocket ) return;
@@ -24,14 +25,15 @@ void main() {
 	iRes = connect( hSocket, (LPSOCKADDR)&servAddr, sizeof( servAddr ) );
 	
 	while(1) {
-		char cBuff = _getch();
+		char msg[100];
 		
+		printf("ют╥б : ");
+		gets(msg);
+
+		send( hSocket, msg, sizeof(msg), 0 );
 		
-		printf("%c", cBuff);
-		send( hSocket, &cBuff, sizeof(cBuff), 0 );
-		
-		if ( 0x1b == cBuff ) {
-			printf("EXIT\n");
+		if (strcmp("END", msg) == 0) {
+			printf("Exit!");
 			break;
 		}
 	}
