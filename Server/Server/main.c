@@ -6,12 +6,37 @@
 #include <conio.h>
 #include <string.h>
 
+#include <process.h>
+
 #include <WinSock2.h>
 #pragma comment( lib, "ws2_32.lib")
 
 #define IPADDR "127.0.0.1"
 
 #include "User.c"
+
+SOCKET hSocket; //서버의 소켓
+SOCKET clients[10]; //클라이언트의 소켓을 저장하는 배열
+int nowClientCount = 0; //접속된 클라이언트 수
+
+void listenClient() {
+	while (1) {
+		// 3. 클라이언트의 연결 요청이 수신 되는지 확인한다.
+		// (클라이언트의 연결 요청을 받는다.)
+		int iRes = listen(hSocket, SOMAXCONN);
+		if (iRes != ERROR_SUCCESS) return;
+
+		// 4. 클라이언트의 연결 요청이 들어오면 요청을 수락하고
+		// 데이터 통신을 위한 소켓을 생성한다.
+		struct sockaddr accept_addr;
+		int iLen = sizeof(accept_addr);
+		SOCKET sockAccept = accept(hSocket, &accept_addr, &iLen);
+		if (ERROR_SUCCESS != iRes) return;
+
+		clients[nowClientCount++] = sockAccept;
+		printf("서버에 클라이언트%d 접속\n", nowClientCount);
+	}
+}
 
 void gotoxy(int x, int y) {
 	COORD pos = { x * 2, y };
@@ -26,7 +51,6 @@ void main() {
 
 
 	// 1. 소켓을 생성한다.
-	SOCKET hSocket;
 	hSocket = socket( PF_INET, SOCK_STREAM, 0 );
 	if ( INVALID_SOCKET == hSocket ) return;
 	
@@ -40,24 +64,12 @@ void main() {
 	if ( ERROR_SUCCESS != iRes ) return;
 	
 
-	// 3. 클라이언트의 연결 요청이 수신 되는지 확인한다.
-	// (클라이언트의 연결 요청을 받는다.)
-	iRes = listen( hSocket, SOMAXCONN );
-	if ( ERROR_SUCCESS != iRes ) return;
-
-
-	// 4. 클라이언트의 연결 요청이 들어오면 요청을 수락하고 데이터 통신을 위한 소켓을 생성한다.
-	struct sockaddr accept_addr;
-	int iLen = sizeof( accept_addr );
-	SOCKET sockAccept = accept( hSocket, &accept_addr, &iLen );
-	if ( ERROR_SUCCESS != iRes ) return;
-
-	printf("서버에 클라이언트 접속\n");
-
 	User serverData;
 	strcpy(serverData.name, "서버");
 	serverData.age = 0;
 
+
+	_beginthreadex(NULL, 0, (_beginthreadex_proc_type)listenClient, NULL, 0, NULL);
 
 	while (1){
 		User resultUserData;
@@ -67,17 +79,17 @@ void main() {
 		
 
 		// 5. 클라이언트로 부터 데이터를 받는다.
-		int iRecv = recv( sockAccept, &resultUserData, sizeof(resultUserData), 0 );
+		// int iRecv = recv( sockAccept, &resultUserData, sizeof(resultUserData), 0 );
 		
 
-		if ( 0 < iRecv ) {
+		/*if ( 0 < iRecv ) {
 			printf("%s(%d세) : %s\n", resultUserData.name, resultUserData.age, resultUserData.msg);
 		}
 
 		printf("입력 : ");
 		gets(input);
 		strcpy(serverData.msg, input);
-		send(sockAccept, &serverData, sizeof(serverData), 0);
+		send(sockAccept, &serverData, sizeof(serverData), 0);*/
 	}
 	
 	closesocket( hSocket );

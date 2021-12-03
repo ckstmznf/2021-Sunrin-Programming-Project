@@ -6,6 +6,8 @@
 #include <conio.h>
 #include <string.h>
 
+#include <process.h>
+
 #pragma comment( lib, "ws2_32.lib")
 #include <WinSock2.h>
 
@@ -27,7 +29,7 @@ void main() {
 	printf("이름을 입력하세요 : ");
 	gets(name);
 
-	printf("나이를 입력하세여 : ");
+	printf("나이를 입력하세요 : ");
 	scanf_s("%d", &age);
 
 	User userData, serverResultData;
@@ -70,10 +72,11 @@ void main() {
 		send(hSocket, &userData, sizeof(userData), 0);
 
 		/*gotoxy(0, chatY++);
-		printf("")*/
+		printf("")
 
 		int resultLen = recv(hSocket, &serverResultData, 100, 0);
 		printf("상대 : %s\n", serverResultData.msg);
+		*/
 	}
 	
 	closesocket( hSocket );
