@@ -48,13 +48,13 @@ void main() {
 	SOCKET hSocket;
 	hSocket = socket( PF_INET, SOCK_STREAM, 0 );
 	// 1. 소켓을 생성한다.
-	if ( INVALID_SOCKET == hSocket ) return;
+	if ( INVALID_SOCKET == hSocket) return;
 	
 	SOCKADDR_IN servAddr;
 	servAddr.sin_family = AF_INET;
 	servAddr.sin_addr.s_addr = inet_addr(IPADDR);
 	servAddr.sin_port = htons( 1234 );
-	iRes = connect( hSocket, (LPSOCKADDR)&servAddr, sizeof( servAddr ) );
+	iRes = connect(hSocket, (LPSOCKADDR)&servAddr, sizeof( servAddr ) );
 	// 2. 서버에 연결을 요청한다.
 
 	printf("===================\n");
@@ -62,14 +62,17 @@ void main() {
 	printf("서버와의 연결을 시작합니다.\n");
 	printf("===================\n");
 
+	send(hSocket, &userData, sizeof(userData), 0);
+	
+
 	while(1) {		
 		char msg[100];
 		printf("입력 : ");
 		gets(msg);
 
-		strcpy(userData.msg, msg, 100);
+		//strcpy(userData.msg, msg, 100);
 
-		send(hSocket, &userData, sizeof(userData), 0);
+		send(hSocket, msg, sizeof(msg), 0);
 
 		/*gotoxy(0, chatY++);
 		printf("")
@@ -79,7 +82,7 @@ void main() {
 		*/
 	}
 	
-	closesocket( hSocket );
+	closesocket(hSocket);
 	// 4. 서버와 통신을 끝는다.
 	WSACleanup();
 }

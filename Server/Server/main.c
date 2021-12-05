@@ -16,8 +16,20 @@
 #include "User.c"
 
 SOCKET hSocket; //서버의 소켓
-SOCKET clients[10]; //클라이언트의 소켓을 저장하는 배열
+User clients[10]; //클라이언트의 정보를 저장한는 배열
 int nowClientCount = 0; //접속된 클라이언트 수
+
+void recvUserMsg(int userIdx){
+	User client = clients[userIdx];
+	printf("client 실행\n");
+	while (1) {
+		char msg[100];
+		int resultLen = recv(client.socket, msg, sizeof(msg), 0);
+		if (resultLen > 0) {
+			printf("%s : %s\n", client.name, msg);
+		}
+	}
+}
 
 void listenClient() {
 	while (1) {
@@ -33,8 +45,15 @@ void listenClient() {
 		SOCKET sockAccept = accept(hSocket, &accept_addr, &iLen);
 		if (ERROR_SUCCESS != iRes) return;
 
-		clients[nowClientCount++] = sockAccept;
-		printf("서버에 클라이언트%d 접속\n", nowClientCount);
+		int userSize = recv(sockAccept, clients + nowClientCount, sizeof(User), 0);
+		
+		if (userSize > 0) {
+			clients[nowClientCount].socket = sockAccept;
+			printf("서버에 클라이언트%d 접속\n", nowClientCount);
+
+			_beginthreadex(NULL, 0, (_beginthreadex_proc_type)recvUserMsg, (void*)nowClientCount, 0, NULL);
+			nowClientCount++;
+		}
 	}
 }
 
