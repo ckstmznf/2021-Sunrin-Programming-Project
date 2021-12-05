@@ -58,17 +58,10 @@ void main() {
 
 	while (1){
 		// 5. 클라이언트로 부터 데이터를 받는다.
-		// int iRecv = recv( sockAccept, &resultUserData, sizeof(resultUserData), 0 );
-		
-
-		/*if ( 0 < iRecv ) {
-			printf("%s(%d세) : %s\n", resultUserData.name, resultUserData.age, resultUserData.msg);
-		}
-
-		printf("입력 : ");
-		gets(input);
-		strcpy(serverData.msg, input);
-		send(sockAccept, &serverData, sizeof(serverData), 0);*/
+		/*
+		int iRecv = recv( sockAccept, &resultUserData, sizeof(resultUserData), 0 );
+		send(sockAccept, &serverData, sizeof(serverData), 0);
+		*/
 	}
 	
 	closesocket( hSocket );
@@ -83,6 +76,12 @@ void recvUserMsg(int userIdx) {
 		int resultLen = recv(client.socket, msg, sizeof(msg), 0);
 		if (resultLen > 0) {
 			printf("%s : %s\n", client.name, msg);
+
+			for (int i = 0; i < nowClientCount; i++) {
+				if (i == userIdx) continue;
+
+				send(clients[i].socket, msg, sizeof(msg), 0);
+			}
 		}
 	}
 }

@@ -16,6 +16,9 @@
 
 #include "User.c"
 
+void sendMsg();
+void recvMsg();
+
 User getUserData() {
 	char name[30];
 	int age;
@@ -41,15 +44,18 @@ void gotoxy(int x, int y) {
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
+User userData;
+SOCKET hSocket;
+
+
 void main() {
-	User userData = getUserData();
+	userData = getUserData();
 
 	WSADATA wsdata;
-
 	int iRes = WSAStartup( MAKEWORD( 0x02, 0x02 ), &wsdata );
 	if ( ERROR_SUCCESS != iRes ) return;
 	
-	SOCKET hSocket;
+	//SOCKET hSocket;
 	hSocket = socket( PF_INET, SOCK_STREAM, 0 );
 	// 1. 소켓을 생성한다.
 	if ( INVALID_SOCKET == hSocket) return;
@@ -68,15 +74,10 @@ void main() {
 
 	send(hSocket, &userData, sizeof(userData), 0);
 	
+	_beginthreadex(NULL, 0, (_beginthreadex_proc_type)sendMsg, NULL, 0, NULL);
+	_beginthreadex(NULL, 0, (_beginthreadex_proc_type)recvMsg, NULL, 0, NULL);
 
 	while(1) {		
-		char msg[100];
-		printf("입력 : ");
-		gets(msg);
-
-		//strcpy(userData.msg, msg, 100);
-
-		send(hSocket, msg, sizeof(msg), 0);
 
 		/*gotoxy(0, chatY++);
 		printf("")
@@ -89,4 +90,25 @@ void main() {
 	closesocket(hSocket);
 	// 4. 서버와 통신을 끝는다.
 	WSACleanup();
+}
+
+
+void sendMsg() {
+	while (1) {
+		char msg[100];
+		printf("입력 : ");
+		gets(msg);
+
+		send(hSocket, msg, sizeof(msg), 0);
+	}
+}
+
+void recvMsg() {
+	while (1) {
+		char msg[100];
+		int resultLen = recv(hSocket, msg, sizeof(msg), 0);
+		if (resultLen > 0) {
+			printf("상대 : %s\n", msg);
+		}
+	}
 }
