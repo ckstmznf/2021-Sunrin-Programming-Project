@@ -12,19 +12,13 @@
 #include <WinSock2.h>
 
 #define IPADDR "127.0.0.1"
+#define PORT 8080
 
 #include "User.c"
 
-void gotoxy(int x, int y) {
-	COORD pos = { x * 2, y };
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-}
-
-void main() {
+User getUserData() {
 	char name[30];
 	int age;
-
-	int chatY = 6;
 
 	printf("이름을 입력하세요 : ");
 	gets(name);
@@ -39,9 +33,19 @@ void main() {
 
 	getchar();
 
+	return userData;
+}
 
+void gotoxy(int x, int y) {
+	COORD pos = { x * 2, y };
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
+
+void main() {
+	User userData = getUserData();
 
 	WSADATA wsdata;
+
 	int iRes = WSAStartup( MAKEWORD( 0x02, 0x02 ), &wsdata );
 	if ( ERROR_SUCCESS != iRes ) return;
 	
@@ -53,7 +57,7 @@ void main() {
 	SOCKADDR_IN servAddr;
 	servAddr.sin_family = AF_INET;
 	servAddr.sin_addr.s_addr = inet_addr(IPADDR);
-	servAddr.sin_port = htons( 1234 );
+	servAddr.sin_port = htons(PORT);
 	iRes = connect(hSocket, (LPSOCKADDR)&servAddr, sizeof( servAddr ) );
 	// 2. 서버에 연결을 요청한다.
 
