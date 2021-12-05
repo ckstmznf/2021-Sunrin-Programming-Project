@@ -15,6 +15,7 @@
 #define PORT 8080
 
 #include "User.c"
+#include "SendObject.c"
 
 void recvUserMsg(int userIdx);
 void listenClient();
@@ -77,10 +78,15 @@ void recvUserMsg(int userIdx) {
 		if (resultLen > 0) {
 			printf("%s : %s\n", client.name, msg);
 
+			SendObject sendData;
+			sendData.age = client.age;
+			strcpy(sendData.name, client.name);
+			strcpy(sendData.msg, msg);
+
 			for (int i = 0; i < nowClientCount; i++) {
 				if (i == userIdx) continue;
-
-				send(clients[i].socket, msg, sizeof(msg), 0);
+				printf("%d에게 전송\t %s, %d, %s\n", i, sendData.name, sendData.age, sendData.msg);
+				send(clients[i].socket, &sendData, sizeof(SendObject), 0);
 			}
 		}
 	}

@@ -15,6 +15,7 @@
 #define PORT 8080
 
 #include "User.c"
+#include "SendObject.c"
 
 void sendMsg();
 void recvMsg();
@@ -105,10 +106,10 @@ void sendMsg() {
 
 void recvMsg() {
 	while (1) {
-		char msg[100];
-		int resultLen = recv(hSocket, msg, sizeof(msg), 0);
+		SendObject result;
+		int resultLen = recv(hSocket, &result, sizeof(SendObject), 0);
 		if (resultLen > 0) {
-			printf("»ó´ë : %s\n", msg);
+			printf("%s : %s\n", result.name, result.msg);
 		}
 	}
 }
