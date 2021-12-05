@@ -84,8 +84,6 @@ void recvUserMsg(int userIdx) {
 			strcpy(sendData.msg, msg);
 
 			for (int i = 0; i < nowClientCount; i++) {
-				if (i == userIdx) continue;
-				printf("%d에게 전송\t %s, %d, %s\n", i, sendData.name, sendData.age, sendData.msg);
 				send(clients[i].socket, &sendData, sizeof(SendObject), 0);
 			}
 		}

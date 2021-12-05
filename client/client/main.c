@@ -19,6 +19,9 @@
 
 void sendMsg();
 void recvMsg();
+void checkInputCount();
+
+void printLine(int lineCount);
 
 User getUserData() {
 	char name[30];
@@ -32,7 +35,7 @@ User getUserData() {
 
 	User userData, serverResultData;
 
-	strcpy(userData.name, name, 10);
+	strcpy(userData.name, name);
 	userData.age = age;
 
 	getchar();
@@ -47,7 +50,8 @@ void gotoxy(int x, int y) {
 
 User userData;
 SOCKET hSocket;
-
+int printYPos = 6;
+int nowInputLen = 0;
 
 void main() {
 	userData = getUserData();
@@ -68,10 +72,15 @@ void main() {
 	iRes = connect(hSocket, (LPSOCKADDR)&servAddr, sizeof( servAddr ) );
 	// 2. 서버에 연결을 요청한다.
 
-	printf("===================\n");
+	system("cls");
+
+	printLine(30);
 	printf("이름 : %s, 나이 : %d\n", userData.name, userData.age);
 	printf("서버와의 연결을 시작합니다.\n");
-	printf("===================\n");
+	printLine(30);
+	gotoxy(0, 5);
+	printLine(30);
+
 
 	send(hSocket, &userData, sizeof(userData), 0);
 	
@@ -86,6 +95,7 @@ void main() {
 		int resultLen = recv(hSocket, &serverResultData, 100, 0);
 		printf("상대 : %s\n", serverResultData.msg);
 		*/
+
 	}
 	
 	closesocket(hSocket);
@@ -97,7 +107,8 @@ void main() {
 void sendMsg() {
 	while (1) {
 		char msg[100];
-		printf("입력 : ");
+		gotoxy(0, 4);
+		printf("> ");
 		gets(msg);
 
 		send(hSocket, msg, sizeof(msg), 0);
@@ -109,7 +120,26 @@ void recvMsg() {
 		SendObject result;
 		int resultLen = recv(hSocket, &result, sizeof(SendObject), 0);
 		if (resultLen > 0) {
-			printf("%s : %s\n", result.name, result.msg);
+			gotoxy(0, printYPos++);
+			printf("%s : %s\n",
+				strcmp(result.name, userData.name) == 0 ? "나" : result.name,
+				result.msg
+			);
+			gotoxy(2, 4);
 		}
 	}
+}
+
+void printLine(int lineCount) {
+	for (int i = 0; i < lineCount; i++) printf("―");
+	printf("\n");
+}
+
+void checkInputCount() {
+	while (1) {
+		//gotoxy(0, 10);
+		int cBuf = _getch();
+		printf("%d\n", cBuf);
+	}
+	//nowInputLen
 }
