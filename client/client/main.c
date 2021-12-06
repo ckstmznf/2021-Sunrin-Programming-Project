@@ -14,14 +14,16 @@
 #define IPADDR "127.0.0.1"
 #define PORT 8080
 
+
 #include "User.c"
 #include "SendObject.c"
 
 void sendMsg();
 void recvMsg();
-void checkInputCount();
 
 void printLine(int lineCount);
+void clearInput(int len);
+
 
 User getUserData() {
 	char name[30];
@@ -44,14 +46,13 @@ User getUserData() {
 }
 
 void gotoxy(int x, int y) {
-	COORD pos = { x * 2, y };
+	COORD pos = { x , y };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
 User userData;
 SOCKET hSocket;
 int printYPos = 6;
-int nowInputLen = 0;
 
 void main() {
 	userData = getUserData();
@@ -80,7 +81,7 @@ void main() {
 	printLine(30);
 	gotoxy(0, 5);
 	printLine(30);
-
+	
 
 	send(hSocket, &userData, sizeof(userData), 0);
 	
@@ -111,6 +112,8 @@ void sendMsg() {
 		printf("> ");
 		gets(msg);
 
+		clearInput(strlen(msg));
+
 		send(hSocket, msg, sizeof(msg), 0);
 	}
 }
@@ -121,10 +124,12 @@ void recvMsg() {
 		int resultLen = recv(hSocket, &result, sizeof(SendObject), 0);
 		if (resultLen > 0) {
 			gotoxy(0, printYPos++);
+
 			printf("%s : %s\n",
 				strcmp(result.name, userData.name) == 0 ? "³ª" : result.name,
 				result.msg
 			);
+
 			gotoxy(2, 4);
 		}
 	}
@@ -135,11 +140,8 @@ void printLine(int lineCount) {
 	printf("\n");
 }
 
-void checkInputCount() {
-	while (1) {
-		//gotoxy(0, 10);
-		int cBuf = _getch();
-		printf("%d\n", cBuf);
-	}
-	//nowInputLen
+void clearInput(int len) {
+	gotoxy(2, 4);
+	while (len--) printf(" ");
+	gotoxy(2, 4);
 }

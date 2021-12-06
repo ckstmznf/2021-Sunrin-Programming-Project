@@ -14,11 +14,32 @@
 #define IPADDR "127.0.0.1"
 #define PORT 8080
 
+// color상수 지정 
+#define BLACK 0 
+#define BLUE 1 
+#define GREEN 2 
+#define CYAN 3 
+#define RED 4 
+#define MAGENTA 5 
+#define BROWN 6 
+#define LIGHTGRAY 7 
+#define DARKGRAY 8 
+#define LIGHTBLUE 9 
+#define LIGHTGREEN 10 
+#define LIGHTCYAN 11 
+#define LIGHTRED 12 
+#define LIGHTMAGENTA 13 
+#define YELLOW 14 
+#define WHITE 15
+
 #include "User.c"
 #include "SendObject.c"
 
 void recvUserMsg(int userIdx);
 void listenClient();
+
+void printLine(int lineCount, int txtColor, int bgColor);
+void textcolor(int foreground, int background);
 
 void gotoxy(int x, int y) {
 	COORD pos = { x * 2, y };
@@ -54,6 +75,9 @@ void main() {
 	strcpy(serverData.name, "서버");
 	serverData.age = 0;
 
+	textcolor(BLUE, WHITE);
+	printf("[LOG] 서버를 작동시킵니다.\n");
+	textcolor(WHITE, BLACK);
 
 	_beginthreadex(NULL, 0, (_beginthreadex_proc_type)listenClient, NULL, 0, NULL);
 
@@ -76,7 +100,7 @@ void recvUserMsg(int userIdx) {
 		char msg[100];
 		int resultLen = recv(client.socket, msg, sizeof(msg), 0);
 		if (resultLen > 0) {
-			printf("%s : %s\n", client.name, msg);
+			printf("[Chat] %s : %s\n", client.name, msg);
 
 			SendObject sendData;
 			sendData.age = client.age;
@@ -108,10 +132,26 @@ void listenClient() {
 
 		if (userSize > 0) {
 			clients[nowClientCount].socket = sockAccept;
-			printf("서버에 클라이언트%d 접속\n", nowClientCount);
+
+			printLine(30, RED, BLACK);
+			printf("클라이언트%d 접속\n", nowClientCount);
+			printf("이름 : %s\n", clients[nowClientCount].name);
+			printLine(30, RED, BLACK);
 
 			_beginthreadex(NULL, 0, (_beginthreadex_proc_type)recvUserMsg, (void*)nowClientCount, 0, NULL);
 			nowClientCount++;
 		}
 	}
+}
+
+void printLine(int lineCount, int txtColor, int bgColor) {
+	textcolor(txtColor, bgColor);
+	for (int i = 0; i < lineCount; i++) printf("―");
+	textcolor(WHITE, BLACK);
+	printf("\n");
+}
+
+void textcolor(int foreground, int background){
+	int color = foreground + background * 16;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
