@@ -42,7 +42,7 @@ void printLine(int lineCount, int txtColor, int bgColor);
 void textcolor(int foreground, int background);
 
 void gotoxy(int x, int y) {
-	COORD pos = { x * 2, y };
+	COORD pos = { x, y };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
@@ -55,7 +55,6 @@ void main() {
 	WSADATA wsdata; //소켓 관련 정보를 저장한다.
 	int iRes = WSAStartup( MAKEWORD( 0x02, 0x02 ), &wsdata );
 	if ( ERROR_SUCCESS != iRes ) return;
-
 
 	// 1. 소켓을 생성한다.
 	hSocket = socket( PF_INET, SOCK_STREAM, 0 );
@@ -102,14 +101,14 @@ void recvUserMsg(int userIdx) {
 		if (resultLen > 0) {
 			printf("[Chat] %s : %s\n", client.name, msg);
 
-			SendObject sendData;
-			sendData.age = client.age;
-			strcpy(sendData.name, client.name);
-			strcpy(sendData.msg, msg);
+			if (0) {
 
-			for (int i = 0; i < nowClientCount; i++) {
-				send(clients[i].socket, &sendData, sizeof(SendObject), 0);
 			}
+			else {
+				strcpy(msg, "제가 잘 이해한건지 모르겠네요.");
+			}
+
+			send(client.socket, msg, sizeof(msg), 0);
 		}
 	}
 }

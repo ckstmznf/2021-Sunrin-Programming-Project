@@ -112,6 +112,9 @@ void sendMsg() {
 		printf("> ");
 		gets(msg);
 
+		
+		gotoxy(0, printYPos++);
+		printf("> ³ª : %s", msg);
 		clearInput(strlen(msg));
 
 		send(hSocket, msg, sizeof(msg), 0);
@@ -120,15 +123,12 @@ void sendMsg() {
 
 void recvMsg() {
 	while (1) {
-		SendObject result;
-		int resultLen = recv(hSocket, &result, sizeof(SendObject), 0);
+		char resultMsg[100];
+		int resultLen = recv(hSocket, resultMsg, sizeof(resultMsg), 0);
 		if (resultLen > 0) {
 			gotoxy(0, printYPos++);
 
-			printf("%s : %s\n",
-				strcmp(result.name, userData.name) == 0 ? "³ª" : result.name,
-				result.msg
-			);
+			printf("%s : %s\n", "Ãªº¿", resultMsg);
 
 			gotoxy(2, 4);
 		}
