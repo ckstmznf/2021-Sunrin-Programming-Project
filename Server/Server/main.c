@@ -34,9 +34,11 @@
 
 #include "User.c"
 #include "SendObject.c"
+#include "data.c"
 
 void recvUserMsg(int userIdx);
 void listenClient();
+char* returnMsg(char* inputMsg);
 
 void printLine(int lineCount, int txtColor, int bgColor);
 void textcolor(int foreground, int background);
@@ -45,6 +47,37 @@ void gotoxy(int x, int y) {
 	COORD pos = { x, y };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
+
+
+char inputData[][100] = {
+	"안녕",
+	"안녕하세요.",
+	"안녕하살법",
+	"EDCAN",
+	"박희찬을 아시나요",
+	"선린",
+	"나 너무 힘들어",
+	"크리스마스",
+	"심희원 선생님",
+	"오늘의 날씨",
+};
+
+char exportData[][100] = {
+	"그래 안녕",
+	"반갑습니다~",
+	"안녕하살법 받아치기",
+	"선린 최고의 동아리",
+	"그는 죽었어...",
+	"최고",
+	"조금만 힘내세요. 이 문이 닫히면 다른문이 열린다는 말도 있잖아요", //6
+	"메리 크리스마스",
+	"최고의 선생님 ^^7 ^^7",
+	"오늘은 무척 추운 날씨입니다. 노트북에 안드로이드 스튜디오를 설치해봐요.",
+};
+
+char faildMsg[] = "제가 잘 이해한건지 모르갰네요";
+
+int dataCount = sizeof(inputData) / 100;
 
 SOCKET hSocket; //서버의 소켓
 User clients[10]; //클라이언트의 정보를 저장한는 배열
@@ -101,12 +134,7 @@ void recvUserMsg(int userIdx) {
 		if (resultLen > 0) {
 			printf("[Chat] %s : %s\n", client.name, msg);
 
-			if (0) {
-
-			}
-			else {
-				strcpy(msg, "제가 잘 이해한건지 모르겠네요.");
-			}
+			strcpy(msg, returnMsg(msg));
 
 			send(client.socket, msg, sizeof(msg), 0);
 		}
@@ -153,4 +181,14 @@ void printLine(int lineCount, int txtColor, int bgColor) {
 void textcolor(int foreground, int background){
 	int color = foreground + background * 16;
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+char* returnMsg(char* inputMsg) {
+	for (int i = 0; i < dataCount; i++) {
+		if (strcmp(inputMsg, inputData[i]) == 0) {
+			return exportData[i];
+		}
+	}
+
+	return faildMsg;
 }
