@@ -23,15 +23,31 @@ void recvMsg();
 
 void printLine(int lineCount);
 void clearInput(int len);
-
+void gotoxy(int x, int y);
 
 User getUserData() {
 	char name[30];
 	int age;
 
+	printLine(32);
+	printf("|\t\t\t\t\t\t\t\t|\n");
+	printLine(32);
+	gotoxy(1, 1);
 	printf("이름을 입력하세요 : ");
 	gets(name);
 
+	
+	system("cls");
+
+
+	printLine(32);
+	printf("|\t\t\t\t\t\t\t\t|\n");
+	printLine(32);
+
+	gotoxy(0, 3);
+	printf("이름 : %s", name);
+
+	gotoxy(1, 1);
 	printf("나이를 입력하세요 : ");
 	scanf_s("%d", &age);
 
